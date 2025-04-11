@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Request, Response } from "express";
-import User from "../models/User";
+import User from "../src/models/User";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 

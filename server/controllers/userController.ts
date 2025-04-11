@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type Request, type Response } from "express";
-import User from "../models/User";
+import User from "../src/models/User";
 
 // Search users
 export const searchUsers = async (req: Request, res: Response) => {

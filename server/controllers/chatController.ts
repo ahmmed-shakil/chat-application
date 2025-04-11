@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Request, Response } from "express";
-import Chat from "../models/Chat";
-import User from "../models/User";
+import Chat from "../src/models/Chat";
+import User from "../src/models/User";
 import mongoose from "mongoose";
 
 // Create or access one-on-one chat

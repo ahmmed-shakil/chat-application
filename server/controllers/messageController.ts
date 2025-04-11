@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Request, Response } from "express";
-import Message, { MessageType } from "../models/Message";
-import Chat from "../models/Chat";
-import User from "../models/User";
+import Message, { MessageType } from "../src/models/Message";
+import Chat from "../src/models/Chat";
+import User from "../src/models/User";
 import path from "path";
 import fs from "fs";
 

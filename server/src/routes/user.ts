@@ -3,7 +3,7 @@ import {
   searchUsers,
   getAllUsers,
   getUserById,
-} from "../controllers/userController";
+} from "../../controllers/userController";
 import { protect } from "../middleware/auth";
 
 const userRoutes = express.Router();

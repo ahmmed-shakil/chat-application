@@ -97,6 +97,13 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "include": ["*.ts", "prisma/**/*", "keys/**/*", "logs/**/*", "types/**/*"],
+  "include": [
+    "*.ts",
+    "prisma/**/*",
+    "keys/**/*",
+    "logs/**/*",
+    "types/**/*",
+    "src/index.ts"
+  ],
   "exclude": ["node_modules"]
 }

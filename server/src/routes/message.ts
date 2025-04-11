@@ -3,7 +3,7 @@ import {
   sendMessage,
   getMessages,
   uploadFile,
-} from "../controllers/messageController";
+} from "../../controllers/messageController";
 import { protect } from "../middleware/auth";
 import multer from "multer";
 

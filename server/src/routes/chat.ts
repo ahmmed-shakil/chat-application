@@ -6,7 +6,7 @@ import {
   updateGroupChat,
   addToGroup,
   removeFromGroup,
-} from "../controllers/chatController";
+} from "../../controllers/chatController";
 import { protect } from "../middleware/auth";
 
 const router = express.Router();
