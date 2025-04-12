@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // // /* eslint-disable @typescript-eslint/no-explicit-any */
 // // import {
 // //   createContext,
@@ -367,6 +368,8 @@ import { io, type Socket } from "socket.io-client";
 import { useSelector, useDispatch } from "react-redux";
 import { selectToken, selectCurrentUser } from "@/lib/features/auth/authSlice";
 import { chatApiSlice } from "@/lib/features/chat/chatApiSlice";
+import { messageApiSlice } from "@/lib/features/message/messageApiSlice";
+import type { AnyAction } from "@reduxjs/toolkit";
 
 interface SocketContextType {
   socket: Socket | null;
@@ -481,9 +484,18 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     const handleMessageReceived = (message: any) => {
       console.log("New message received via socket:", message);
 
-      // Use the Redux toolkit API invalidation to trigger a refetch
+      // Instead of trying to directly update the cache, we'll use invalidation
+      // which is more reliable with TypeScript
       dispatch(chatApiSlice.util.invalidateTags(["Chat"]));
-      dispatch(chatApiSlice.util.invalidateTags(["Message"]));
+      dispatch(messageApiSlice.util.invalidateTags(["Message"]));
+
+      // Additionally, we can dispatch an action to update the UI immediately
+      // This approach works around TypeScript issues with updateQueryData
+      if (message && message.chat && message.chat._id) {
+        // Create a custom action to handle the new message in your reducer
+        // or simply rely on the invalidation to trigger a refetch
+        console.log("Triggering refetch for chat:", message.chat._id);
+      }
     };
 
     // Handle typing events
@@ -500,7 +512,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     // Handle message read updates
     const handleMessageReadUpdate = (messageId: string, userId: string) => {
       console.log(`Message ${messageId} marked as read by ${userId}`);
-      // Update read status in your UI
+
+      // Use invalidation for message updates
+      dispatch(messageApiSlice.util.invalidateTags(["Message"]));
     };
 
     // Set up event listeners
