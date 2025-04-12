@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetUserChatsQuery } from "@/lib/features/chat/chatApiSlice";
 import { type Chat, Message } from "@/lib/features/chat/chatApiSlice";
 import type { User } from "@/lib/features/auth/authSlice";
@@ -29,10 +29,10 @@ export default function ChatList({
   onNewChat,
   onNewGroup,
 }: ChatListProps) {
-  const { data, isLoading, error } = useGetUserChatsQuery();
+  const { data, isLoading, error, refetch } = useGetUserChatsQuery();
   const [searchTerm, setSearchTerm] = useState("");
   const currentUser = useSelector(selectCurrentUser);
-  const { onlineUsers } = useSocket();
+  const { onlineUsers, socket } = useSocket();
 
   // Get chat name based on whether it's a group or not
   const getChatName = (chat: Chat, user?: User | null) => {
@@ -42,6 +42,21 @@ export default function ChatList({
     const otherUser = chat.users.find((u) => u._id !== user?._id);
     return otherUser?.name || "Unknown User";
   };
+
+  useEffect(() => {
+    if (socket) {
+      const handleNewMessage = () => {
+        // Refetch the chat list when a new message is received
+        refetch();
+      };
+
+      socket.on("message-received", handleNewMessage);
+
+      return () => {
+        socket.off("message-received", handleNewMessage);
+      };
+    }
+  }, [socket, refetch]);
 
   // Filter chats based on search term
   const filteredChats = data?.data
