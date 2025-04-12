@@ -3,7 +3,8 @@ import type { RootState } from "../store";
 
 // Define base query with authorization header
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://chat-application-agpb.onrender.com/api",
+  // baseUrl: "process.env.NEXT_PUBLIC_BACKEND_URL/api",
+  baseUrl: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`,
   // baseUrl: "http://localhost:5000/api",
   prepareHeaders: (headers, { getState }) => {
     // Add token to request headers

@@ -126,6 +126,7 @@ export const setupSocketHandlers = (io: Server) => {
   const activeUsers = new Map();
 
   io.on("connection", async (socket: Socket) => {
+    console.log("🚀 ~ io.on ~ socket:", socket);
     console.log("New client connected: ", socket.id);
 
     // Add user to active users when they come online
@@ -178,6 +179,53 @@ export const setupSocketHandlers = (io: Server) => {
     });
 
     // Handle new message
+    // socket.on("new-message", (message) => {
+    //   const chat = message.chat;
+
+    //   if (!chat || !chat.users) {
+    //     console.log("Chat or chat users not defined in the message:", message);
+    //     return;
+    //   }
+
+    //   console.log(
+    //     "New message received from client. Broadcasting to recipients in chat:",
+    //     chat._id
+    //   );
+
+    //   // Send to all users in the chat except the sender
+    //   chat.users.forEach((user: any) => {
+    //     // Skip sending to the sender
+    //     if (user === message.sender._id) return;
+
+    //     const recipientSocketId = activeUsers.get(user);
+    //     console.log(
+    //       "🚀 ~ chat.users.forEach ~ recipientSocketId:",
+    //       recipientSocketId
+    //     );
+
+    //     if (recipientSocketId) {
+    //       console.log(
+    //         `Sending message to user ${user} via socket ID ${recipientSocketId}`
+    //       );
+
+    //       // Send the message to the chat room for real-time display
+    //       io.to(chat._id).emit("message-received", message);
+
+    //       // Send directly to the user's socket ID
+    //       io.to(recipientSocketId).emit("message-received", message);
+
+    //       // Also send to the user's room (userId) for redundancy
+    //       io.to(user).emit("message-received", message);
+
+    //       // And to the chat room if they're in it
+    //       io.to(chat).emit("message-received", message);
+    //     } else {
+    //       console.log(
+    //         `User ${user} is not online, cannot deliver message immediately`
+    //       );
+    //     }
+    //   });
+    // });
     socket.on("new-message", (message) => {
       const chat = message.chat;
 
@@ -191,29 +239,33 @@ export const setupSocketHandlers = (io: Server) => {
         chat._id
       );
 
+      // Send the message to the chat room for real-time display
+      io.to(chat._id).emit("message-received", message);
+
+      // Also emit a separate event for chat list updates
+      // This will be used to update the chat list without interfering with message display
+      io.emit("chat-list-update", message);
+
       // Send to all users in the chat except the sender
       chat.users.forEach((user: any) => {
         // Skip sending to the sender
-        if (user._id === message.sender._id) return;
+        if (user === message.sender._id) return;
 
-        const recipientSocketId = activeUsers.get(user._id);
+        const recipientSocketId = activeUsers.get(user);
 
         if (recipientSocketId) {
           console.log(
-            `Sending message to user ${user._id} via socket ID ${recipientSocketId}`
+            `Sending message to user ${user} via socket ID ${recipientSocketId}`
           );
 
-          // Send directly to the user's socket ID
-          io.to(recipientSocketId).emit("message-received", message);
+          // Send notifications directly to the user's socket ID
+          io.to(recipientSocketId).emit("message-notification", message);
 
           // Also send to the user's room (userId) for redundancy
-          io.to(user._id).emit("message-received", message);
-
-          // And to the chat room if they're in it
-          io.to(chat._id).emit("message-received", message);
+          io.to(user).emit("message-notification", message);
         } else {
           console.log(
-            `User ${user._id} is not online, cannot deliver message immediately`
+            `User ${user} is not online, cannot deliver message immediately`
           );
         }
       });
@@ -221,19 +273,19 @@ export const setupSocketHandlers = (io: Server) => {
 
     // Handle typing indicator
     socket.on("typing", (chatId, userId) => {
-      console.log(`User ${userId} is typing in chat ${chatId}`);
+      // console.log(`User ${userId} is typing in chat ${chatId}`);
       socket.to(chatId).emit("typing", chatId, userId);
     });
 
     // Handle stop typing indicator
     socket.on("stop-typing", (chatId) => {
-      console.log(`User stopped typing in chat ${chatId}`);
+      // console.log(`User stopped typing in chat ${chatId}`);
       socket.to(chatId).emit("stop-typing", chatId);
     });
 
     // Handle when user reads a message
     socket.on("message-read", async (messageId, userId) => {
-      console.log(`Message ${messageId} marked as read by user ${userId}`);
+      // console.log(`Message ${messageId} marked as read by user ${userId}`);
       io.emit("message-read-update", messageId, userId);
     });
 

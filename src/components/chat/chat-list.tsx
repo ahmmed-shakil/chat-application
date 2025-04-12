@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useGetUserChatsQuery } from "@/lib/features/chat/chatApiSlice";
 import { type Chat, Message } from "@/lib/features/chat/chatApiSlice";
 import type { User } from "@/lib/features/auth/authSlice";
@@ -15,6 +15,7 @@ import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ChatListItem from "./chat-list-item";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface ChatListProps {
   onSelectChat: (chat: Chat) => void;
@@ -44,18 +45,19 @@ export default function ChatList({
   };
 
   useEffect(() => {
-    if (socket) {
-      const handleNewMessage = () => {
-        // Refetch the chat list when a new message is received
-        refetch();
-      };
+    if (!socket) return;
 
-      socket.on("message-received", handleNewMessage);
+    const handleChatListUpdate = () => {
+      // Simply refetch the chat list when a new message arrives anywhere
+      console.log("Refetching chat list due to update");
+      refetch();
+    };
 
-      return () => {
-        socket.off("message-received", handleNewMessage);
-      };
-    }
+    socket.on("chat-list-update", handleChatListUpdate);
+
+    return () => {
+      socket.off("chat-list-update", handleChatListUpdate);
+    };
   }, [socket, refetch]);
 
   // Filter chats based on search term

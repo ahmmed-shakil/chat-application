@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import type { Chat } from '@/lib/features/chat/chatApiSlice';
-import { formatDistanceToNow } from 'date-fns';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
-import { CheckCheck } from 'lucide-react';
+import type { Chat } from "@/lib/features/chat/chatApiSlice";
+import { formatDistanceToNow } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
+import { CheckCheck } from "lucide-react";
 
 interface ChatListItemProps {
   chat: Chat;
@@ -23,26 +23,28 @@ export default function ChatListItem({
   avatar,
   onClick,
 }: ChatListItemProps) {
+  console.log("🚀 ~ chat:", chat?.lastMessage);
+  // console.log("🚀 ~ chat:", chat);
   // Get the first letter of the name for the avatar fallback
   const getInitials = (name: string) => {
     return name
-      .split(' ')
+      .split(" ")
       .map((n) => n[0])
-      .join('')
+      .join("")
       .toUpperCase();
   };
 
   // Format the timestamp
   const getFormattedTime = (timestamp?: string) => {
-    if (!timestamp) return '';
+    if (!timestamp) return "";
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
   };
 
   return (
     <div
       className={cn(
-        'p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors',
-        isSelected && 'bg-gray-100 dark:bg-gray-900'
+        "p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors",
+        isSelected && "bg-gray-100 dark:bg-gray-900"
       )}
       onClick={onClick}
     >
@@ -64,13 +66,20 @@ export default function ChatListItem({
             </span>
           </div>
           <div className="flex justify-between items-center mt-1">
-            <p className="text-sm text-gray-500 truncate">
+            <p
+              className={`text-sm truncate  ${
+                chat?.lastMessage?.readBy &&
+                chat?.lastMessage?.readBy?.length > 2
+                  ? "text-gray-500"
+                  : "text-gray-700 font-semibold"
+              }`}
+            >
               {chat.lastMessage ? (
                 <>
-                  {chat.lastMessage.type !== 'text' ? (
+                  {chat.lastMessage.type !== "text" ? (
                     <span className="italic">
                       {chat.lastMessage.type.charAt(0).toUpperCase() +
-                      chat.lastMessage.type.slice(1)}
+                        chat.lastMessage.type.slice(1)}
                     </span>
                   ) : (
                     chat.lastMessage.content

@@ -34,7 +34,7 @@ export default function MessageItem({
         return (
           <div className="relative max-w-xs overflow-hidden rounded-lg">
             <img
-              src={`https://chat-application-agpb.onrender.com${message.content}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${message.content}`}
               alt="Image"
               className="w-full h-auto"
             />
@@ -51,7 +51,7 @@ export default function MessageItem({
               <p className="text-sm">Audio message</p>
               <audio controls className="w-full mt-1">
                 <source
-                  src={`https://chat-application-agpb.onrender.com${message.content}`}
+                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${message.content}`}
                   type="audio/mpeg"
                 />
                 Your browser does not support the audio element.
@@ -66,7 +66,7 @@ export default function MessageItem({
         return (
           <div className="relative max-w-xs overflow-hidden rounded-lg">
             <video
-              src={`https://chat-application-agpb.onrender.com${message.content}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${message.content}`}
               controls
               className="w-full h-auto"
             />
@@ -84,7 +84,7 @@ export default function MessageItem({
                 {message.content.split("/").pop()}
               </p>
               <a
-                href={`https://chat-application-agpb.onrender.com${message.content}`}
+                href={`${process.env.NEXT_PUBLIC_BACKEND_URL}${message.content}`}
                 download
                 className="text-xs text-blue-500 flex items-center gap-1 mt-1"
               >

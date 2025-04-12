@@ -414,7 +414,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     if (token && !socketRef.current) {
       console.log("Initializing socket connection");
 
-      const newSocket = io("https://chat-application-agpb.onrender.com", {
+      const newSocket = io(`${process.env.NEXT_PUBLIC_BACKEND_URL}`, {
         transports: ["websocket"],
       });
 
@@ -502,21 +502,33 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     const handleMessageReceived = (message: any) => {
       console.log("New message received via socket:", message);
 
-      // Instead of trying to directly update the cache, we'll use invalidation
-      if (message && message.chat && message.chat._id) {
-        // Create a custom action with proper typing
-        const customAction: AnyAction = {
-          type: "socket/messageReceived",
-          payload: message,
-        };
+      // This event will be used by the ChatLayout component
+      // to display new messages in the current chat
 
-        // Dispatch the custom action first
-        dispatch(customAction);
+      // Invalidate message cache to ensure new messages are loaded
+      dispatch(messageApiSlice.util.invalidateTags(["Message"]));
+    };
 
-        // Then invalidate the tags to trigger a refetch
-        dispatch(chatApiSlice.util.invalidateTags(["Chat"]) as AnyAction);
-        dispatch(messageApiSlice.util.invalidateTags(["Message"]) as AnyAction);
-      }
+    // Handle chat list updates (for chat list refresh)
+    const handleChatListUpdate = (message: any) => {
+      console.log("Chat list update received:", message);
+
+      // This event will be used by the ChatList component
+      // to refresh the chat list when new messages arrive
+
+      // Invalidate chat cache to ensure chat list is updated
+      dispatch(chatApiSlice.util.invalidateTags(["Chat"]));
+    };
+
+    // Handle message notifications (for toast notifications)
+    const handleMessageNotification = (message: any) => {
+      console.log("Message notification received:", message);
+
+      // This event is for showing notifications when messages
+      // arrive in chats other than the current one
+
+      // You can dispatch an action to show a notification
+      // or use your toast directly here if needed
     };
 
     // Handle typing events
@@ -526,13 +538,13 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const handleStopTyping = (chatId: string) => {
-      console.log(`Typing stopped in chat ${chatId}`);
+      // console.log(`Typing stopped in chat ${chatId}`);
       // Handle stop typing in your UI
     };
 
     // Handle message read updates
     const handleMessageReadUpdate = (messageId: string, userId: string) => {
-      console.log(`Message ${messageId} marked as read by ${userId}`);
+      // console.log(`Message ${messageId} marked as read by ${userId}`);
 
       // Use invalidation for message updates
       dispatch(messageApiSlice.util.invalidateTags(["Message"]));
@@ -544,6 +556,8 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     currentSocket.on("user-online", handleUserOnline);
     currentSocket.on("user-offline", handleUserOffline);
     currentSocket.on("message-received", handleMessageReceived);
+    currentSocket.on("chat-list-update", handleChatListUpdate);
+    currentSocket.on("message-notification", handleMessageNotification);
     currentSocket.on("typing", handleTyping);
     currentSocket.on("stop-typing", handleStopTyping);
     currentSocket.on("message-read-update", handleMessageReadUpdate);
@@ -555,6 +569,8 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       currentSocket.off("user-online", handleUserOnline);
       currentSocket.off("user-offline", handleUserOffline);
       currentSocket.off("message-received", handleMessageReceived);
+      currentSocket.off("chat-list-update", handleChatListUpdate);
+      currentSocket.off("message-notification", handleMessageNotification);
       currentSocket.off("typing", handleTyping);
       currentSocket.off("stop-typing", handleStopTyping);
       currentSocket.off("message-read-update", handleMessageReadUpdate);
