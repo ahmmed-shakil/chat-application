@@ -355,6 +355,8 @@
 //   );
 // };
 
+// 2222
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   createContext,
@@ -481,20 +483,39 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // Handle incoming messages event
+    // const handleMessageReceived = (message: any) => {
+    //   console.log("New message received via socket:", message);
+
+    //   // Instead of trying to directly update the cache, we'll use invalidation
+    //   // which is more reliable with TypeScript
+    //   dispatch(chatApiSlice.util.invalidateTags(["Chat"]));
+    //   dispatch(messageApiSlice.util.invalidateTags(["Message"]));
+
+    //   // Additionally, we can dispatch an action to update the UI immediately
+    //   // This approach works around TypeScript issues with updateQueryData
+    //   if (message && message.chat && message.chat._id) {
+    //     // Create a custom action to handle the new message in your reducer
+    //     // or simply rely on the invalidation to trigger a refetch
+    //     console.log("Triggering refetch for chat:", message.chat._id);
+    //   }
+    // };
     const handleMessageReceived = (message: any) => {
       console.log("New message received via socket:", message);
 
       // Instead of trying to directly update the cache, we'll use invalidation
-      // which is more reliable with TypeScript
-      dispatch(chatApiSlice.util.invalidateTags(["Chat"]));
-      dispatch(messageApiSlice.util.invalidateTags(["Message"]));
-
-      // Additionally, we can dispatch an action to update the UI immediately
-      // This approach works around TypeScript issues with updateQueryData
       if (message && message.chat && message.chat._id) {
-        // Create a custom action to handle the new message in your reducer
-        // or simply rely on the invalidation to trigger a refetch
-        console.log("Triggering refetch for chat:", message.chat._id);
+        // Create a custom action with proper typing
+        const customAction: AnyAction = {
+          type: "socket/messageReceived",
+          payload: message,
+        };
+
+        // Dispatch the custom action first
+        dispatch(customAction);
+
+        // Then invalidate the tags to trigger a refetch
+        dispatch(chatApiSlice.util.invalidateTags(["Chat"]) as AnyAction);
+        dispatch(messageApiSlice.util.invalidateTags(["Message"]) as AnyAction);
       }
     };
 
