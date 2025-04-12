@@ -409,7 +409,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     if (token && !socketRef.current) {
       console.log("Initializing socket connection");
 
-      const newSocket = io("http://localhost:5000", {
+      const newSocket = io("https://chat-application-agpb.onrender.com", {
         transports: ["websocket"],
       });
 
