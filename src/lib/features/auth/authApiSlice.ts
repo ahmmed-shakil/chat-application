@@ -1,5 +1,5 @@
-import { apiSlice } from '../api/apiSlice';
-import type { User } from './authSlice';
+import { apiSlice } from "../api/apiSlice";
+import type { User } from "./authSlice";
 
 export interface LoginRequest {
   email: string;
@@ -26,27 +26,29 @@ export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials) => ({
-        url: '/auth/login',
-        method: 'POST',
+        url: "/auth/login",
+        method: "POST",
         body: credentials,
       }),
+      invalidatesTags: ["Chat", "Message"],
     }),
     register: builder.mutation<AuthResponse, RegisterRequest>({
       query: (userData) => ({
-        url: '/auth/register',
-        method: 'POST',
+        url: "/auth/register",
+        method: "POST",
         body: userData,
       }),
+      invalidatesTags: ["Chat", "Message"],
     }),
     logout: builder.mutation<{ success: boolean; message: string }, void>({
       query: () => ({
-        url: '/auth/logout',
-        method: 'POST',
+        url: "/auth/logout",
+        method: "POST",
       }),
     }),
     getCurrentUser: builder.query<{ success: boolean; data: User }, void>({
-      query: () => '/auth/me',
-      providesTags: ['User'],
+      query: () => "/auth/me",
+      providesTags: ["User"],
     }),
   }),
 });
