@@ -96,7 +96,7 @@ export default function ChatListItem({
               )}
             </p>
             {chat.lastMessage?.readBy.length === chat.users.length &&
-              chat?.lastMessage?.sender === currentUser?._id && (
+              chat?.lastMessage?.sender?._id === currentUser?._id && (
                 <CheckCheck className="h-4 w-4 text-blue-500" />
               )}
           </div>

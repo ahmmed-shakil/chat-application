@@ -15,8 +15,8 @@ export interface Chat {
 
 export interface Message {
   _id: string;
-  // sender: User;
-  sender: string;
+  sender: User;
+  // sender: string;
   content: string;
   chat: Chat;
   type: string;
