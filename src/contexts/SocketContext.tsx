@@ -548,6 +548,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
       // Use invalidation for message updates
       dispatch(messageApiSlice.util.invalidateTags(["Message"]));
+      dispatch(chatApiSlice.util.invalidateTags(["Chat"]));
     };
 
     // Set up event listeners

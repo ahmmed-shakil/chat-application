@@ -1,5 +1,5 @@
-import { apiSlice } from '../api/apiSlice';
-import type { User } from '../auth/authSlice';
+import { apiSlice } from "../api/apiSlice";
+import type { User } from "../auth/authSlice";
 
 export interface Chat {
   _id: string;
@@ -15,11 +15,13 @@ export interface Chat {
 
 export interface Message {
   _id: string;
-  sender: User;
+  // sender: User;
+  sender: string;
   content: string;
   chat: Chat;
   type: string;
-  readBy: User[];
+  // readBy: User[];
+  readBy: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -58,48 +60,54 @@ export interface GroupUserRequest {
 export const chatApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getUserChats: builder.query<ChatsResponse, void>({
-      query: () => '/chats',
-      providesTags: ['Chat'],
+      query: () => "/chats",
+      providesTags: ["Chat"],
     }),
     accessChat: builder.mutation<SingleChatResponse, AccessChatRequest>({
       query: (data) => ({
-        url: '/chats',
-        method: 'POST',
+        url: "/chats",
+        method: "POST",
         body: data,
       }),
-      invalidatesTags: ['Chat'],
+      invalidatesTags: ["Chat"],
     }),
-    createGroupChat: builder.mutation<SingleChatResponse, CreateGroupChatRequest>({
+    createGroupChat: builder.mutation<
+      SingleChatResponse,
+      CreateGroupChatRequest
+    >({
       query: (data) => ({
-        url: '/chats/group',
-        method: 'POST',
+        url: "/chats/group",
+        method: "POST",
         body: data,
       }),
-      invalidatesTags: ['Chat'],
+      invalidatesTags: ["Chat"],
     }),
-    updateGroupChat: builder.mutation<SingleChatResponse, UpdateGroupChatRequest>({
+    updateGroupChat: builder.mutation<
+      SingleChatResponse,
+      UpdateGroupChatRequest
+    >({
       query: (data) => ({
-        url: '/chats/group',
-        method: 'PUT',
+        url: "/chats/group",
+        method: "PUT",
         body: data,
       }),
-      invalidatesTags: ['Chat'],
+      invalidatesTags: ["Chat"],
     }),
     addToGroup: builder.mutation<SingleChatResponse, GroupUserRequest>({
       query: (data) => ({
-        url: '/chats/group/add',
-        method: 'PUT',
+        url: "/chats/group/add",
+        method: "PUT",
         body: data,
       }),
-      invalidatesTags: ['Chat'],
+      invalidatesTags: ["Chat"],
     }),
     removeFromGroup: builder.mutation<SingleChatResponse, GroupUserRequest>({
       query: (data) => ({
-        url: '/chats/group/remove',
-        method: 'PUT',
+        url: "/chats/group/remove",
+        method: "PUT",
         body: data,
       }),
-      invalidatesTags: ['Chat'],
+      invalidatesTags: ["Chat"],
     }),
   }),
 });

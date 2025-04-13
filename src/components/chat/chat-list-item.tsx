@@ -5,6 +5,8 @@ import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { CheckCheck } from "lucide-react";
+import { selectCurrentUser } from "@/lib/features/auth/authSlice";
+import { useSelector } from "react-redux";
 
 interface ChatListItemProps {
   chat: Chat;
@@ -23,9 +25,13 @@ export default function ChatListItem({
   avatar,
   onClick,
 }: ChatListItemProps) {
-  console.log("🚀 ~ chat:", chat?.lastMessage);
+  // console.log("🚀 ~ chat:", chat?.lastMessage);
   // console.log("🚀 ~ chat:", chat);
   // Get the first letter of the name for the avatar fallback
+
+  const currentUser = useSelector(selectCurrentUser);
+  // console.log("🚀 ~ currentUser:", currentUser);
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -68,8 +74,8 @@ export default function ChatListItem({
           <div className="flex justify-between items-center mt-1">
             <p
               className={`text-sm truncate  ${
-                chat?.lastMessage?.readBy &&
-                chat?.lastMessage?.readBy?.length > 2
+                currentUser &&
+                chat?.lastMessage?.readBy?.includes(currentUser._id)
                   ? "text-gray-500"
                   : "text-gray-700 font-semibold"
               }`}
@@ -89,9 +95,10 @@ export default function ChatListItem({
                 <span className="italic">No messages yet</span>
               )}
             </p>
-            {chat.lastMessage?.readBy.length === chat.users.length && (
-              <CheckCheck className="h-4 w-4 text-blue-500" />
-            )}
+            {chat.lastMessage?.readBy.length === chat.users.length &&
+              chat?.lastMessage?.sender === currentUser?._id && (
+                <CheckCheck className="h-4 w-4 text-blue-500" />
+              )}
           </div>
         </div>
       </div>
