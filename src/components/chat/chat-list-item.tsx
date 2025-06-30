@@ -4,7 +4,7 @@ import type { Chat } from "@/lib/features/chat/chatApiSlice";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { CheckCheck } from "lucide-react";
+import { Check, CheckCheck } from "lucide-react";
 import { selectCurrentUser } from "@/lib/features/auth/authSlice";
 import { useSelector } from "react-redux";
 
@@ -25,12 +25,7 @@ export default function ChatListItem({
   avatar,
   onClick,
 }: ChatListItemProps) {
-  // console.log("🚀 ~ chat:", chat?.lastMessage);
-  // console.log("🚀 ~ chat:", chat);
-  // Get the first letter of the name for the avatar fallback
-
   const currentUser = useSelector(selectCurrentUser);
-  // console.log("🚀 ~ currentUser:", currentUser);
 
   const getInitials = (name: string) => {
     return name
@@ -40,7 +35,6 @@ export default function ChatListItem({
       .toUpperCase();
   };
 
-  // Format the timestamp
   const getFormattedTime = (timestamp?: string) => {
     if (!timestamp) return "";
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
@@ -65,40 +59,58 @@ export default function ChatListItem({
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex justify-between items-start">
-            <h3 className="font-medium truncate">{name}</h3>
-            <span className="text-xs text-gray-500 whitespace-nowrap">
+          <div className="flex justify-between items-start mb-1">
+            <h3 className="font-medium truncate pr-2">{name}</h3>
+            <span className="text-xs text-gray-500 whitespace-nowrap flex-shrink-0">
               {getFormattedTime(chat.updatedAt)}
             </span>
           </div>
-          <div className="flex justify-between items-center mt-1">
-            <p
-              className={`text-sm truncate  ${
-                currentUser &&
-                chat?.lastMessage?.readBy?.includes(currentUser._id)
-                  ? "text-gray-500"
-                  : "text-gray-700 font-semibold"
-              }`}
-            >
-              {chat.lastMessage ? (
+          <div className="flex items-start gap-2">
+            {/* Message content with proper wrapping */}
+            <div className="flex-1 min-w-0">
+              <p
+                className={`text-sm leading-tight break-words ${
+                  currentUser &&
+                  chat?.lastMessage?.readBy?.includes(currentUser._id)
+                    ? "text-gray-500"
+                    : "text-gray-700 font-semibold"
+                }`}
+                style={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  wordBreak: "break-word",
+                }}
+              >
+                {chat.lastMessage ? (
+                  <>
+                    {chat.lastMessage.type !== "text" ? (
+                      <span className="italic">
+                        {chat.lastMessage.type.charAt(0).toUpperCase() +
+                          chat.lastMessage.type.slice(1)}
+                      </span>
+                    ) : (
+                      chat.lastMessage.content
+                    )}
+                  </>
+                ) : (
+                  <span className="italic">No messages yet</span>
+                )}
+              </p>
+            </div>
+            {/* Status icons - always visible */}
+            <div className="flex-shrink-0 flex items-center">
+              {chat.lastMessage?.sender?._id === currentUser?._id && (
                 <>
-                  {chat.lastMessage.type !== "text" ? (
-                    <span className="italic">
-                      {chat.lastMessage.type.charAt(0).toUpperCase() +
-                        chat.lastMessage.type.slice(1)}
-                    </span>
+                  {chat.lastMessage?.readBy.length === chat.users.length ? (
+                    <CheckCheck className="h-4 w-4 text-blue-500" />
                   ) : (
-                    chat.lastMessage.content
+                    <Check className="h-4 w-4 text-gray-500" />
                   )}
                 </>
-              ) : (
-                <span className="italic">No messages yet</span>
               )}
-            </p>
-            {chat.lastMessage?.readBy.length === chat.users.length &&
-              chat?.lastMessage?.sender?._id === currentUser?._id && (
-                <CheckCheck className="h-4 w-4 text-blue-500" />
-              )}
+            </div>
           </div>
         </div>
       </div>

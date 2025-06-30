@@ -19,8 +19,6 @@ export default function Home() {
     return null;
   }
 
-  console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-950">
       {isAuthenticated ? (
@@ -29,7 +27,7 @@ export default function Home() {
         <div className="flex flex-col items-center">
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold text-green-600 mb-2">
-              WhatsApp Clone
+              BlinkChat
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
               Connect with friends and family

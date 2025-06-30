@@ -1,363 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// // /* eslint-disable @typescript-eslint/no-explicit-any */
-// // import {
-// //   createContext,
-// //   useContext,
-// //   useEffect,
-// //   useState,
-// //   type ReactNode,
-// // } from "react";
-// // import { io, type Socket } from "socket.io-client";
-// // import { useSelector } from "react-redux";
-// // import { selectToken, selectCurrentUser } from "@/lib/features/auth/authSlice";
-
-// // interface SocketContextType {
-// //   socket: Socket | null;
-// //   online: boolean;
-// //   onlineUsers: Set<string>;
-// //   joinChat: (chatId: string) => void;
-// //   leaveChat: (chatId: string) => void;
-// //   emitTyping: (chatId: string) => void;
-// //   emitStopTyping: (chatId: string) => void;
-// //   emitNewMessage: (message: any) => void;
-// //   emitMessageRead: (messageId: string) => void;
-// // }
-
-// // const SocketContext = createContext<SocketContextType>({
-// //   socket: null,
-// //   online: false,
-// //   onlineUsers: new Set(),
-// //   joinChat: () => {},
-// //   leaveChat: () => {},
-// //   emitTyping: () => {},
-// //   emitStopTyping: () => {},
-// //   emitNewMessage: () => {},
-// //   emitMessageRead: () => {},
-// // });
-
-// // export const useSocket = () => useContext(SocketContext);
-
-// // export const SocketProvider = ({ children }: { children: ReactNode }) => {
-// //   const [socket, setSocket] = useState<Socket | null>(null);
-// //   const [online, setOnline] = useState<boolean>(false);
-// //   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
-// //   const token = useSelector(selectToken);
-// //   const currentUser = useSelector(selectCurrentUser);
-
-// //   useEffect(() => {
-// //     // Initialize socket when token is available
-// //     if (token && !socket) {
-// //       const newSocket = io("http://localhost:5000", {
-// //         transports: ["websocket"],
-// //       });
-
-// //       setSocket(newSocket);
-
-// //       // Socket connect event
-// //       newSocket.on("connect", () => {
-// //         console.log("Socket connected");
-// //         setOnline(true);
-
-// //         // Setup user connection with token
-// //         if (token) {
-// //           newSocket.emit("setup", token);
-// //         }
-// //       });
-
-// //       // Socket disconnect event
-// //       newSocket.on("disconnect", () => {
-// //         console.log("Socket disconnected");
-// //         setOnline(false);
-// //       });
-
-// //       // Listen for online users
-// //       newSocket.on("user-online", (userId) => {
-// //         setOnlineUsers((prev) => new Set(prev).add(userId));
-// //       });
-
-// //       // Listen for offline users
-// //       newSocket.on("user-offline", (userId) => {
-// //         setOnlineUsers((prev) => {
-// //           const newSet = new Set(prev);
-// //           newSet.delete(userId);
-// //           return newSet;
-// //         });
-// //       });
-
-// //       // Cleanup on unmount
-// //       return () => {
-// //         newSocket.disconnect();
-// //         setSocket(null);
-// //       };
-// //     }
-
-// //     // If token is removed, disconnect socket
-// //     if (!token && socket) {
-// //       socket.disconnect();
-// //       setSocket(null);
-// //       setOnline(false);
-// //     }
-// //   }, [token, socket]);
-
-// //   // Function to join a chat room
-// //   const joinChat = (chatId: string) => {
-// //     if (socket && online) {
-// //       socket.emit("join-chat", chatId);
-// //     }
-// //   };
-
-// //   // Function to leave a chat room
-// //   const leaveChat = (chatId: string) => {
-// //     if (socket && online) {
-// //       socket.emit("leave-chat", chatId);
-// //     }
-// //   };
-
-// //   // Function to emit typing indicator
-// //   const emitTyping = (chatId: string) => {
-// //     if (socket && online && currentUser) {
-// //       socket.emit("typing", chatId, currentUser._id);
-// //     }
-// //   };
-
-// //   // Function to emit stop typing indicator
-// //   const emitStopTyping = (chatId: string) => {
-// //     if (socket && online) {
-// //       socket.emit("stop-typing", chatId);
-// //     }
-// //   };
-
-// //   // Function to emit new message
-// //   const emitNewMessage = (message: any) => {
-// //     if (socket && online) {
-// //       socket.emit("new-message", message);
-// //     }
-// //   };
-
-// //   // Function to emit message read
-// //   const emitMessageRead = (messageId: string) => {
-// //     if (socket && online && currentUser) {
-// //       socket.emit("message-read", messageId, currentUser._id);
-// //     }
-// //   };
-
-// //   return (
-// //     <SocketContext.Provider
-// //       value={{
-// //         socket,
-// //         online,
-// //         onlineUsers,
-// //         joinChat,
-// //         leaveChat,
-// //         emitTyping,
-// //         emitStopTyping,
-// //         emitNewMessage,
-// //         emitMessageRead,
-// //       }}
-// //     >
-// //       {children}
-// //     </SocketContext.Provider>
-// //   );
-// // };
-
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import {
-//   createContext,
-//   useContext,
-//   useEffect,
-//   useState,
-//   useRef,
-//   type ReactNode,
-// } from "react";
-// import { io, type Socket } from "socket.io-client";
-// import { useSelector } from "react-redux";
-// import { selectToken, selectCurrentUser } from "@/lib/features/auth/authSlice";
-
-// interface SocketContextType {
-//   socket: Socket | null;
-//   online: boolean;
-//   onlineUsers: Set<string>;
-//   joinChat: (chatId: string) => void;
-//   leaveChat: (chatId: string) => void;
-//   emitTyping: (chatId: string) => void;
-//   emitStopTyping: (chatId: string) => void;
-//   emitNewMessage: (message: any) => void;
-//   emitMessageRead: (messageId: string) => void;
-// }
-
-// const SocketContext = createContext<SocketContextType>({
-//   socket: null,
-//   online: false,
-//   onlineUsers: new Set(),
-//   joinChat: () => {},
-//   leaveChat: () => {},
-//   emitTyping: () => {},
-//   emitStopTyping: () => {},
-//   emitNewMessage: () => {},
-//   emitMessageRead: () => {},
-// });
-
-// export const useSocket = () => useContext(SocketContext);
-
-// export const SocketProvider = ({ children }: { children: ReactNode }) => {
-//   const [socket, setSocket] = useState<Socket | null>(null);
-//   const [online, setOnline] = useState<boolean>(false);
-//   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
-//   const token = useSelector(selectToken);
-//   const currentUser = useSelector(selectCurrentUser);
-//   const socketRef = useRef<Socket | null>(null);
-
-//   // Initialize socket connection
-//   useEffect(() => {
-//     // Only initialize if we have a token and no socket yet
-//     if (token && !socketRef.current) {
-//       console.log("Initializing socket connection");
-
-//       const newSocket = io("http://localhost:5000", {
-//         transports: ["websocket"],
-//       });
-
-//       // Store in ref to avoid dependency cycle
-//       socketRef.current = newSocket;
-//       setSocket(newSocket);
-
-//       // Clean up on unmount or token change
-//       return () => {
-//         console.log("Cleaning up socket connection");
-//         if (socketRef.current) {
-//           socketRef.current.disconnect();
-//           socketRef.current = null;
-//           setSocket(null);
-//           setOnline(false);
-//         }
-//       };
-//     }
-
-//     // Disconnect if token is removed
-//     if (!token && socketRef.current) {
-//       console.log("Token removed, disconnecting socket");
-//       socketRef.current.disconnect();
-//       socketRef.current = null;
-//       setSocket(null);
-//       setOnline(false);
-//     }
-//   }, [token]);
-
-//   // Setup socket event listeners
-//   useEffect(() => {
-//     const currentSocket = socketRef.current;
-
-//     if (!currentSocket) return;
-
-//     // Socket connect event
-//     const handleConnect = () => {
-//       console.log("Socket connected");
-//       setOnline(true);
-
-//       // Setup user connection with token
-//       if (token) {
-//         currentSocket.emit("setup", token);
-//       }
-//     };
-
-//     // Socket disconnect event
-//     const handleDisconnect = () => {
-//       console.log("Socket disconnected");
-//       setOnline(false);
-//     };
-
-//     // User online/offline events
-//     const handleUserOnline = (userId: string) => {
-//       setOnlineUsers((prev) => new Set(prev).add(userId));
-//     };
-
-//     const handleUserOffline = (userId: string) => {
-//       setOnlineUsers((prev) => {
-//         const newSet = new Set(prev);
-//         newSet.delete(userId);
-//         return newSet;
-//       });
-//     };
-
-//     // Set up event listeners
-//     currentSocket.on("connect", handleConnect);
-//     currentSocket.on("disconnect", handleDisconnect);
-//     currentSocket.on("user-online", handleUserOnline);
-//     currentSocket.on("user-offline", handleUserOffline);
-
-//     // Clean up event listeners
-//     return () => {
-//       currentSocket.off("connect", handleConnect);
-//       currentSocket.off("disconnect", handleDisconnect);
-//       currentSocket.off("user-online", handleUserOnline);
-//       currentSocket.off("user-offline", handleUserOffline);
-//     };
-//   }, [token]);
-
-//   // Function to join a chat room
-//   const joinChat = (chatId: string) => {
-//     if (socketRef.current && online) {
-//       socketRef.current.emit("join-chat", chatId);
-//     }
-//   };
-
-//   // Function to leave a chat room
-//   const leaveChat = (chatId: string) => {
-//     if (socketRef.current && online) {
-//       socketRef.current.emit("leave-chat", chatId);
-//     }
-//   };
-
-//   // Function to emit typing indicator
-//   const emitTyping = (chatId: string) => {
-//     if (socketRef.current && online && currentUser) {
-//       socketRef.current.emit("typing", chatId, currentUser._id);
-//     }
-//   };
-
-//   // Function to emit stop typing indicator
-//   const emitStopTyping = (chatId: string) => {
-//     if (socketRef.current && online) {
-//       socketRef.current.emit("stop-typing", chatId);
-//     }
-//   };
-
-//   // Function to emit new message
-//   const emitNewMessage = (message: any) => {
-//     if (socketRef.current && online) {
-//       socketRef.current.emit("new-message", message);
-//     }
-//   };
-
-//   // Function to emit message read
-//   const emitMessageRead = (messageId: string) => {
-//     if (socketRef.current && online && currentUser) {
-//       socketRef.current.emit("message-read", messageId, currentUser._id);
-//     }
-//   };
-
-//   return (
-//     <SocketContext.Provider
-//       value={{
-//         socket,
-//         online,
-//         onlineUsers,
-//         joinChat,
-//         leaveChat,
-//         emitTyping,
-//         emitStopTyping,
-//         emitNewMessage,
-//         emitMessageRead,
-//       }}
-//     >
-//       {children}
-//     </SocketContext.Provider>
-//   );
-// };
-
-// 2222
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   createContext,
   useContext,
@@ -377,6 +18,7 @@ interface SocketContextType {
   socket: Socket | null;
   online: boolean;
   onlineUsers: Set<string>;
+  typingUsers: Map<string, Set<string>>; // chatId -> Set of user IDs
   joinChat: (chatId: string) => void;
   leaveChat: (chatId: string) => void;
   emitTyping: (chatId: string) => void;
@@ -389,6 +31,7 @@ const SocketContext = createContext<SocketContextType>({
   socket: null,
   online: false,
   onlineUsers: new Set(),
+  typingUsers: new Map(),
   joinChat: () => {},
   leaveChat: () => {},
   emitTyping: () => {},
@@ -403,14 +46,15 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [online, setOnline] = useState<boolean>(false);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [typingUsers, setTypingUsers] = useState<Map<string, Set<string>>>(
+    new Map()
+  );
   const token = useSelector(selectToken);
   const currentUser = useSelector(selectCurrentUser);
   const socketRef = useRef<Socket | null>(null);
   const dispatch = useDispatch();
 
-  // Initialize socket connection
   useEffect(() => {
-    // Only initialize if we have a token and no socket yet
     if (token && !socketRef.current) {
       console.log("Initializing socket connection");
 
@@ -418,11 +62,8 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         transports: ["websocket"],
       });
 
-      // Store in ref to avoid dependency cycle
       socketRef.current = newSocket;
       setSocket(newSocket);
-
-      // Clean up on unmount or token change
       return () => {
         console.log("Cleaning up socket connection");
         if (socketRef.current) {
@@ -434,7 +75,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    // Disconnect if token is removed
     if (!token && socketRef.current) {
       console.log("Token removed, disconnecting socket");
       socketRef.current.disconnect();
@@ -444,30 +84,25 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
-  // Setup socket event listeners
   useEffect(() => {
     const currentSocket = socketRef.current;
 
     if (!currentSocket) return;
 
-    // Socket connect event
     const handleConnect = () => {
       console.log("Socket connected");
       setOnline(true);
 
-      // Setup user connection with token
       if (token) {
         currentSocket.emit("setup", token);
       }
     };
 
-    // Socket disconnect event
     const handleDisconnect = () => {
       console.log("Socket disconnected");
       setOnline(false);
     };
 
-    // User online/offline events
     const handleUserOnline = (userId: string) => {
       console.log("User came online:", userId);
       setOnlineUsers((prev) => new Set(prev).add(userId));
@@ -482,103 +117,229 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       });
     };
 
-    // Handle incoming messages event
-    // const handleMessageReceived = (message: any) => {
-    //   console.log("New message received via socket:", message);
-
-    //   // Instead of trying to directly update the cache, we'll use invalidation
-    //   // which is more reliable with TypeScript
-    //   dispatch(chatApiSlice.util.invalidateTags(["Chat"]));
-    //   dispatch(messageApiSlice.util.invalidateTags(["Message"]));
-
-    //   // Additionally, we can dispatch an action to update the UI immediately
-    //   // This approach works around TypeScript issues with updateQueryData
-    //   if (message && message.chat && message.chat._id) {
-    //     // Create a custom action to handle the new message in your reducer
-    //     // or simply rely on the invalidation to trigger a refetch
-    //     console.log("Triggering refetch for chat:", message.chat._id);
-    //   }
-    // };
     const handleMessageReceived = (message: any) => {
       console.log("New message received via socket:", message);
 
-      // This event will be used by the ChatLayout component
-      // to display new messages in the current chat
+      // Optimistically update message list
+      dispatch(
+        messageApiSlice.util.updateQueryData(
+          "getMessages",
+          message.chat._id || message.chat,
+          (draft) => {
+            // Check if message already exists (avoid duplicates)
+            const exists = draft.data.some((msg) => msg._id === message._id);
+            if (!exists) {
+              // Only add if it's not from current user OR if no existing message with same content/timestamp
+              const isDuplicate = draft.data.some(
+                (msg) =>
+                  msg.content === message.content &&
+                  msg.sender._id === message.sender._id &&
+                  Math.abs(
+                    new Date(msg.createdAt).getTime() -
+                      new Date(message.createdAt).getTime()
+                  ) < 5000 // Within 5 seconds
+              );
 
-      // Invalidate message cache to ensure new messages are loaded
-      dispatch(messageApiSlice.util.invalidateTags(["Message"]));
+              if (!isDuplicate) {
+                draft.data.push(message);
+              } else {
+                console.log(
+                  "Skipping duplicate message based on content/timestamp"
+                );
+              }
+            }
+          }
+        ) as unknown as AnyAction
+      );
+
+      // Update chat list with last message
+      dispatch(
+        chatApiSlice.util.updateQueryData(
+          "getUserChats",
+          undefined,
+          (draft: any) => {
+            const chatId = message.chat._id || message.chat;
+            const chatIndex = draft.data.findIndex(
+              (chat: any) => chat._id === chatId
+            );
+            if (chatIndex !== -1) {
+              draft.data[chatIndex].lastMessage = message;
+              // Move chat to top
+              const [chat] = draft.data.splice(chatIndex, 1);
+              draft.data.unshift(chat);
+            }
+          }
+        ) as unknown as AnyAction
+      );
     };
 
-    // Handle chat list updates (for chat list refresh)
-    const handleChatListUpdate = (message: any) => {
-      console.log("Chat list update received:", message);
+    const handleChatListUpdate = (data: any) => {
+      console.log("Chat list update:", data);
 
-      // This event will be used by the ChatList component
-      // to refresh the chat list when new messages arrive
-
-      // Invalidate chat cache to ensure chat list is updated
-      dispatch(chatApiSlice.util.invalidateTags(["Chat"]));
+      // Re-fetch chat list to ensure it's up to date
+      dispatch(
+        chatApiSlice.util.invalidateTags(["Chat"]) as unknown as AnyAction
+      );
     };
 
-    // Handle message notifications (for toast notifications)
+    const handleMessageDelivered = (data: {
+      messageId: string;
+      chatId: string;
+      userId: string;
+    }) => {
+      console.log("Message delivered:", data);
+
+      // Update message delivery status
+      dispatch(
+        messageApiSlice.util.updateQueryData(
+          "getMessages",
+          data.chatId,
+          (draft) => {
+            const message = draft.data.find(
+              (msg) => msg._id === data.messageId
+            );
+            if (message) {
+              message.sent = true;
+            }
+          }
+        ) as unknown as AnyAction
+      );
+    };
+
     const handleMessageNotification = (message: any) => {
       console.log("Message notification received:", message);
-
-      // This event is for showing notifications when messages
-      // arrive in chats other than the current one
-
-      // You can dispatch an action to show a notification
-      // or use your toast directly here if needed
     };
 
-    // Handle typing events
-    const handleTyping = (chatId: string, userId: string) => {
-      console.log(`User ${userId} is typing in chat ${chatId}`);
-      // Handle typing indicator in your UI
+    const handleTyping = (data: {
+      chatId: string;
+      userId: string;
+      userName: string;
+    }) => {
+      console.log(`User ${data.userName} is typing in chat ${data.chatId}`);
+      setTypingUsers((prev) => {
+        const newMap = new Map(prev);
+        const chatTypers = newMap.get(data.chatId) || new Set();
+        chatTypers.add(data.userId);
+        newMap.set(data.chatId, chatTypers);
+        return newMap;
+      });
     };
 
-    const handleStopTyping = (chatId: string) => {
-      // console.log(`Typing stopped in chat ${chatId}`);
-      // Handle stop typing in your UI
+    const handleStopTyping = (data: { chatId: string; userId: string }) => {
+      console.log(`User ${data.userId} stopped typing in chat ${data.chatId}`);
+      setTypingUsers((prev) => {
+        const newMap = new Map(prev);
+        const chatTypers = newMap.get(data.chatId);
+        if (chatTypers) {
+          chatTypers.delete(data.userId);
+          if (chatTypers.size === 0) {
+            newMap.delete(data.chatId);
+          } else {
+            newMap.set(data.chatId, chatTypers);
+          }
+        }
+        return newMap;
+      });
     };
 
-    // Handle message read updates
-    const handleMessageReadUpdate = (messageId: string, userId: string) => {
-      // console.log(`Message ${messageId} marked as read by ${userId}`);
+    const handleMessageReadUpdate = (data: {
+      messageId: string;
+      userId: string;
+      chatId: string;
+    }) => {
+      console.log("Message read update:", data);
 
-      // Use invalidation for message updates
-      dispatch(messageApiSlice.util.invalidateTags(["Message"]));
-      dispatch(chatApiSlice.util.invalidateTags(["Chat"]));
+      // Update message read status optimistically
+      dispatch(
+        messageApiSlice.util.updateQueryData(
+          "getMessages",
+          data.chatId,
+          (draft) => {
+            // Find message by ID first, then by other criteria if not found
+            let message = draft.data.find((msg) => msg._id === data.messageId);
+
+            // If not found by exact ID, try to find by content/timestamp (for optimistic updates)
+            if (!message) {
+              console.log(
+                "Message not found by ID, searching for recent messages..."
+              );
+              // Find the most recent message that hasn't been read by this user
+              message = draft.data
+                .filter((msg) => !msg.readBy.includes(data.userId))
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )[0];
+            }
+
+            if (message && !message.readBy.includes(data.userId)) {
+              message.readBy.push(data.userId);
+              console.log(`Updated read status for message ${message._id}`);
+            } else if (message) {
+              console.log(
+                `User ${data.userId} already read message ${message._id}`
+              );
+            } else {
+              console.log(
+                `Message ${data.messageId} not found in chat ${data.chatId}`
+              );
+            }
+          }
+        ) as unknown as AnyAction
+      );
+
+      // Also update the chat list if this was the last message
+      dispatch(
+        chatApiSlice.util.updateQueryData(
+          "getUserChats",
+          undefined,
+          (draft: any) => {
+            const chatIndex = draft.data.findIndex(
+              (chat: any) => chat._id === data.chatId
+            );
+            if (
+              chatIndex !== -1 &&
+              draft.data[chatIndex].lastMessage?._id === data.messageId
+            ) {
+              if (
+                !draft.data[chatIndex].lastMessage.readBy.includes(data.userId)
+              ) {
+                draft.data[chatIndex].lastMessage.readBy.push(data.userId);
+              }
+            }
+          }
+        ) as unknown as AnyAction
+      );
     };
 
-    // Set up event listeners
     currentSocket.on("connect", handleConnect);
     currentSocket.on("disconnect", handleDisconnect);
     currentSocket.on("user-online", handleUserOnline);
     currentSocket.on("user-offline", handleUserOffline);
     currentSocket.on("message-received", handleMessageReceived);
+    currentSocket.on("message-delivered", handleMessageDelivered);
     currentSocket.on("chat-list-update", handleChatListUpdate);
     currentSocket.on("message-notification", handleMessageNotification);
     currentSocket.on("typing", handleTyping);
     currentSocket.on("stop-typing", handleStopTyping);
     currentSocket.on("message-read-update", handleMessageReadUpdate);
 
-    // Clean up event listeners
     return () => {
       currentSocket.off("connect", handleConnect);
       currentSocket.off("disconnect", handleDisconnect);
       currentSocket.off("user-online", handleUserOnline);
       currentSocket.off("user-offline", handleUserOffline);
       currentSocket.off("message-received", handleMessageReceived);
+      currentSocket.off("message-delivered", handleMessageDelivered);
       currentSocket.off("chat-list-update", handleChatListUpdate);
       currentSocket.off("message-notification", handleMessageNotification);
       currentSocket.off("typing", handleTyping);
       currentSocket.off("stop-typing", handleStopTyping);
       currentSocket.off("message-read-update", handleMessageReadUpdate);
     };
-  }, [token, dispatch]);
+  }, [token, dispatch, currentUser?._id]);
 
-  // Function to join a chat room
   const joinChat = (chatId: string) => {
     if (socketRef.current && online) {
       console.log("Joining chat:", chatId);
@@ -586,7 +347,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Function to leave a chat room
   const leaveChat = (chatId: string) => {
     if (socketRef.current && online) {
       console.log("Leaving chat:", chatId);
@@ -594,21 +354,18 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Function to emit typing indicator
   const emitTyping = (chatId: string) => {
     if (socketRef.current && online && currentUser) {
       socketRef.current.emit("typing", chatId, currentUser._id);
     }
   };
 
-  // Function to emit stop typing indicator
   const emitStopTyping = (chatId: string) => {
     if (socketRef.current && online) {
       socketRef.current.emit("stop-typing", chatId);
     }
   };
 
-  // Function to emit new message
   const emitNewMessage = (message: any) => {
     if (socketRef.current && online) {
       console.log("Emitting new message:", message);
@@ -616,7 +373,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Function to emit message read
   const emitMessageRead = (messageId: string) => {
     if (socketRef.current && online && currentUser) {
       socketRef.current.emit("message-read", messageId, currentUser._id);
@@ -629,6 +385,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         socket,
         online,
         onlineUsers,
+        typingUsers,
         joinChat,
         leaveChat,
         emitTyping,

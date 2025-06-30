@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import type { Message } from "@/lib/features/chat/chatApiSlice";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import {
+  Check,
   CheckCheck,
   Download,
   FileText,
@@ -16,12 +18,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 interface MessageItemProps {
   message: Message;
   isOwnMessage: boolean;
+  chat: any;
 }
 
 export default function MessageItem({
   message,
   isOwnMessage,
+  chat,
 }: MessageItemProps) {
+  console.log("🚀 ~ message:", message);
   // Format the timestamp
   const getFormattedTime = (timestamp: string) => {
     return format(new Date(timestamp), "p"); // 'p' is the time format (e.g., 12:00 PM)
@@ -109,16 +114,19 @@ export default function MessageItem({
             <p className="break-words">{message.content}</p>
             <div className="text-xs text-gray-500 mt-1 flex items-center justify-end gap-1">
               {getFormattedTime(message.createdAt)}
-              {isOwnMessage && message.readBy.length > 1 && (
-                <CheckCheck className="h-3 w-3 text-blue-500" />
-              )}
+              {isOwnMessage &&
+                message.readBy.length !== chat?.users?.length &&
+                message?.sent && <Check className="h-3 w-3 text-gray-500" />}
+              {isOwnMessage &&
+                message.readBy.length === chat?.users?.length && (
+                  <CheckCheck className="h-3 w-3 text-blue-500" />
+                )}
             </div>
           </div>
         );
     }
   };
 
-  // If it's a group chat and not our message, show sender name and avatar
   const showSender = !isOwnMessage && message.chat.isGroupChat;
 
   return (

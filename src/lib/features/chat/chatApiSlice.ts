@@ -24,6 +24,7 @@ export interface Message {
   readBy: string[];
   createdAt: string;
   updatedAt: string;
+  sent: boolean;
 }
 
 export interface ChatsResponse {
@@ -69,7 +70,29 @@ export const chatApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Chat"],
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data: responseData } = await queryFulfilled;
+
+          // Optimistically update the chat list
+          dispatch(
+            chatApiSlice.util.updateQueryData(
+              "getUserChats",
+              undefined,
+              (draft) => {
+                const existingChat = draft.data.find(
+                  (chat) => chat._id === responseData.data._id
+                );
+                if (!existingChat) {
+                  draft.data.unshift(responseData.data);
+                }
+              }
+            )
+          );
+        } catch (error) {
+          // Error handling is done by RTK Query
+        }
+      },
     }),
     createGroupChat: builder.mutation<
       SingleChatResponse,
@@ -80,7 +103,24 @@ export const chatApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Chat"],
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data: responseData } = await queryFulfilled;
+
+          // Optimistically update the chat list
+          dispatch(
+            chatApiSlice.util.updateQueryData(
+              "getUserChats",
+              undefined,
+              (draft) => {
+                draft.data.unshift(responseData.data);
+              }
+            )
+          );
+        } catch (error) {
+          // Error handling is done by RTK Query
+        }
+      },
     }),
     updateGroupChat: builder.mutation<
       SingleChatResponse,
@@ -91,7 +131,29 @@ export const chatApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Chat"],
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data: responseData } = await queryFulfilled;
+
+          // Optimistically update the chat in the list
+          dispatch(
+            chatApiSlice.util.updateQueryData(
+              "getUserChats",
+              undefined,
+              (draft) => {
+                const index = draft.data.findIndex(
+                  (chat) => chat._id === responseData.data._id
+                );
+                if (index !== -1) {
+                  draft.data[index] = responseData.data;
+                }
+              }
+            )
+          );
+        } catch (error) {
+          // Error handling is done by RTK Query
+        }
+      },
     }),
     addToGroup: builder.mutation<SingleChatResponse, GroupUserRequest>({
       query: (data) => ({
@@ -99,7 +161,29 @@ export const chatApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Chat"],
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data: responseData } = await queryFulfilled;
+
+          // Optimistically update the chat in the list
+          dispatch(
+            chatApiSlice.util.updateQueryData(
+              "getUserChats",
+              undefined,
+              (draft) => {
+                const index = draft.data.findIndex(
+                  (chat) => chat._id === responseData.data._id
+                );
+                if (index !== -1) {
+                  draft.data[index] = responseData.data;
+                }
+              }
+            )
+          );
+        } catch (error) {
+          // Error handling is done by RTK Query
+        }
+      },
     }),
     removeFromGroup: builder.mutation<SingleChatResponse, GroupUserRequest>({
       query: (data) => ({
@@ -107,7 +191,29 @@ export const chatApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Chat"],
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data: responseData } = await queryFulfilled;
+
+          // Optimistically update the chat in the list
+          dispatch(
+            chatApiSlice.util.updateQueryData(
+              "getUserChats",
+              undefined,
+              (draft) => {
+                const index = draft.data.findIndex(
+                  (chat) => chat._id === responseData.data._id
+                );
+                if (index !== -1) {
+                  draft.data[index] = responseData.data;
+                }
+              }
+            )
+          );
+        } catch (error) {
+          // Error handling is done by RTK Query
+        }
+      },
     }),
   }),
 });

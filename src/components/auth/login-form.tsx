@@ -22,7 +22,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-// Validation schema
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z
@@ -43,7 +42,6 @@ export default function LoginForm({
   const dispatch = useDispatch();
   const { toast } = useToast();
 
-  // Initialize form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,7 +50,6 @@ export default function LoginForm({
     },
   });
 
-  // Handle form submission
   const onSubmit = async (values: FormValues) => {
     try {
       const response = await login(values).unwrap();

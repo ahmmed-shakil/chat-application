@@ -1,18 +1,23 @@
-'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSearchUsersQuery } from '@/lib/features/user/userApiSlice';
-import { useAccessChatMutation } from '@/lib/features/chat/chatApiSlice';
-import type { User } from '@/lib/features/auth/authSlice';
-import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect } from "react";
+import { useSearchUsersQuery } from "@/lib/features/user/userApiSlice";
+import { useAccessChatMutation } from "@/lib/features/chat/chatApiSlice";
+import type { User } from "@/lib/features/auth/authSlice";
+import { useToast } from "@/hooks/use-toast";
 
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Loader2, Search, UserPlus } from 'lucide-react';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Loader2, Search, UserPlus } from "lucide-react";
 
 interface UserSearchProps {
   open: boolean;
@@ -20,16 +25,19 @@ interface UserSearchProps {
   onChatCreated: (chat: any) => void;
 }
 
-export default function UserSearch({ open, onClose, onChatCreated }: UserSearchProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedTerm, setDebouncedTerm] = useState('');
+export default function UserSearch({
+  open,
+  onClose,
+  onChatCreated,
+}: UserSearchProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedTerm, setDebouncedTerm] = useState("");
   const { data, isLoading } = useSearchUsersQuery(debouncedTerm, {
-    skip: debouncedTerm.length < 2
+    skip: debouncedTerm.length < 2,
   });
   const [accessChat, { isLoading: isCreatingChat }] = useAccessChatMutation();
   const { toast } = useToast();
 
-  // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedTerm(searchTerm);
@@ -38,11 +46,10 @@ export default function UserSearch({ open, onClose, onChatCreated }: UserSearchP
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Clear search when dialog closes
   useEffect(() => {
     if (!open) {
-      setSearchTerm('');
-      setDebouncedTerm('');
+      setSearchTerm("");
+      setDebouncedTerm("");
     }
   }, [open]);
 
@@ -53,16 +60,16 @@ export default function UserSearch({ open, onClose, onChatCreated }: UserSearchP
       if (response.success) {
         onChatCreated(response.data);
         toast({
-          title: 'Chat created',
-          description: 'You can now start messaging',
+          title: "Chat created",
+          description: "You can now start messaging",
         });
         onClose();
       }
     } catch (error: any) {
       toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.data?.message || 'Failed to create chat',
+        variant: "destructive",
+        title: "Error",
+        description: error.data?.message || "Failed to create chat",
       });
     }
   };
@@ -104,7 +111,10 @@ export default function UserSearch({ open, onClose, onChatCreated }: UserSearchP
               </div>
             ) : (
               data.data.map((user: User) => (
-                <div key={user._id} className="p-3 flex justify-between items-center">
+                <div
+                  key={user._id}
+                  className="p-3 flex justify-between items-center"
+                >
                   <div className="flex items-center gap-3">
                     <Avatar>
                       <AvatarImage src={user.profilePicture} alt={user.name} />

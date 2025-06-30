@@ -6,16 +6,13 @@ import { type Chat, Message } from "@/lib/features/chat/chatApiSlice";
 import type { User } from "@/lib/features/auth/authSlice";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "@/lib/features/auth/authSlice";
-import { formatDistanceToNow } from "date-fns";
 import { useSocket } from "@/contexts/SocketContext";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import ChatListItem from "./chat-list-item";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
 
 interface ChatListProps {
   onSelectChat: (chat: Chat) => void;
@@ -30,12 +27,11 @@ export default function ChatList({
   onNewChat,
   onNewGroup,
 }: ChatListProps) {
-  const { data, isLoading, error, refetch } = useGetUserChatsQuery();
+  const { data, isLoading, error } = useGetUserChatsQuery();
   const [searchTerm, setSearchTerm] = useState("");
   const currentUser = useSelector(selectCurrentUser);
   const { onlineUsers, socket } = useSocket();
 
-  // Get chat name based on whether it's a group or not
   const getChatName = (chat: Chat, user?: User | null) => {
     if (chat.isGroupChat) {
       return chat.name;
@@ -44,23 +40,6 @@ export default function ChatList({
     return otherUser?.name || "Unknown User";
   };
 
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleChatListUpdate = () => {
-      // Simply refetch the chat list when a new message arrives anywhere
-      console.log("Refetching chat list due to update");
-      refetch();
-    };
-
-    socket.on("chat-list-update", handleChatListUpdate);
-
-    return () => {
-      socket.off("chat-list-update", handleChatListUpdate);
-    };
-  }, [socket, refetch]);
-
-  // Filter chats based on search term
   const filteredChats = data?.data
     ? data.data.filter((chat) => {
         const chatName = getChatName(chat, currentUser);
@@ -68,7 +47,6 @@ export default function ChatList({
       })
     : [];
 
-  // Get chat avatar
   const getChatAvatar = (chat: Chat, user?: User | null) => {
     if (chat.isGroupChat) {
       return chat.groupPicture;
@@ -77,7 +55,6 @@ export default function ChatList({
     return otherUser?.profilePicture;
   };
 
-  // Check if the other user is online
   const isUserOnline = (chat: Chat, user?: User | null) => {
     if (chat.isGroupChat) return false;
     const otherUser = chat.users.find((u) => u._id !== user?._id);

@@ -7,8 +7,8 @@ import Providers from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "WhatsApp Clone",
-  description: "A WhatsApp clone built with Next.js and Socket.io",
+  title: "BlinkChat",
+  description: "A chat app built with Next.js and Socket.io",
 };
 
 export default function RootLayout({

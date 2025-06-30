@@ -61,16 +61,13 @@ export default function RegisterForm({
     },
   });
 
-  // Handle form submission
   const onSubmit = async (values: FormValues) => {
     try {
-      // Remove confirmPassword from the data sent to API
       const { confirmPassword, ...registerData } = values;
 
       const response = await register(registerData).unwrap();
 
       if (response.success) {
-        // Store user data and token in Redux
         dispatch(
           setCredentials({
             user: response.data.user,

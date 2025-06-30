@@ -49,7 +49,6 @@ export default function MessageInput({
   const { toast } = useToast();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Handle typing indicator
   useEffect(() => {
     if (message && !isTyping) {
       setIsTyping(true);
@@ -80,29 +79,27 @@ export default function MessageInput({
 
     try {
       if (selectedFile) {
-        const response = await uploadFile({
+        await uploadFile({
           chatId,
           file: selectedFile,
           type: fileType,
         }).unwrap();
 
-        if (response.success) {
-          emitNewMessage(response.data);
-          onMessageSent(response.data);
-          setSelectedFile(null);
-          setFileType("");
-        }
+        setSelectedFile(null);
+        setFileType("");
       } else {
-        const response = await sendMessage({
+        await sendMessage({
           chatId,
           content: message.trim(),
         }).unwrap();
 
-        if (response.success) {
-          emitNewMessage(response.data);
-          onMessageSent(response.data);
-          setMessage("");
-        }
+        setMessage("");
+      }
+
+      // Stop typing when message is sent
+      if (isTyping) {
+        setIsTyping(false);
+        emitStopTyping(chatId);
       }
     } catch (error: any) {
       toast({

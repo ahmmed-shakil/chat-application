@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import type { Chat } from '@/lib/features/chat/chatApiSlice';
-import type { User } from '@/lib/features/auth/authSlice';
-import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '@/lib/features/auth/authSlice';
-import { useSocket } from '@/contexts/SocketContext';
+import type { Chat } from "@/lib/features/chat/chatApiSlice";
+import type { User } from "@/lib/features/auth/authSlice";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/lib/features/auth/authSlice";
+import { useSocket } from "@/contexts/SocketContext";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MoreVertical, Phone, Video } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MoreVertical, Phone, Video } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
 interface ChatHeaderProps {
   chat: Chat;
@@ -23,20 +23,22 @@ interface ChatHeaderProps {
   onLeaveGroup?: () => void;
 }
 
-export default function ChatHeader({ chat, onViewInfo, onLeaveGroup }: ChatHeaderProps) {
+export default function ChatHeader({
+  chat,
+  onViewInfo,
+  onLeaveGroup,
+}: ChatHeaderProps) {
   const currentUser = useSelector(selectCurrentUser);
   const { onlineUsers } = useSocket();
 
-  // Get chat name based on whether it's a group or not
   const getChatName = (chat: Chat, user?: User | null) => {
     if (chat.isGroupChat) {
       return chat.name;
     }
     const otherUser = chat.users.find((u) => u._id !== user?._id);
-    return otherUser?.name || 'Unknown User';
+    return otherUser?.name || "Unknown User";
   };
 
-  // Get chat avatar
   const getChatAvatar = (chat: Chat, user?: User | null) => {
     if (chat.isGroupChat) {
       return chat.groupPicture;
@@ -45,19 +47,17 @@ export default function ChatHeader({ chat, onViewInfo, onLeaveGroup }: ChatHeade
     return otherUser?.profilePicture;
   };
 
-  // Check if the other user is online
   const isUserOnline = (chat: Chat, user?: User | null) => {
     if (chat.isGroupChat) return false;
     const otherUser = chat.users.find((u) => u._id !== user?._id);
     return otherUser ? onlineUsers.has(otherUser._id) : false;
   };
 
-  // Get the first letter of the name for the avatar fallback
   const getInitials = (name: string) => {
     return name
-      .split(' ')
+      .split(" ")
       .map((n) => n[0])
-      .join('')
+      .join("")
       .toUpperCase();
   };
 
@@ -80,7 +80,11 @@ export default function ChatHeader({ chat, onViewInfo, onLeaveGroup }: ChatHeade
         <div>
           <h2 className="font-medium">{name}</h2>
           <p className="text-xs text-gray-500">
-            {isOnline ? 'Online' : chat.isGroupChat ? `${chat.users.length} members` : 'Offline'}
+            {isOnline
+              ? "Online"
+              : chat.isGroupChat
+              ? `${chat.users.length} members`
+              : "Offline"}
           </p>
         </div>
       </div>
