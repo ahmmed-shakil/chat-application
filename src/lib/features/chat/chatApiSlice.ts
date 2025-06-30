@@ -26,6 +26,7 @@ export interface Message {
   updatedAt: string;
   sent: boolean;
   delivered?: boolean;
+  isUploading?: boolean; // For showing loading state during file upload
 }
 
 export interface ChatsResponse {

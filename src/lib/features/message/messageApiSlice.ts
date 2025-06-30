@@ -167,8 +167,9 @@ export const messageApiSlice = apiSlice.injectEndpoints({
         const state = getState() as any;
         const currentUser = state.auth.user;
 
+        const tempId = uuidv4();
         const tempMessage: Message = {
-          _id: uuidv4(),
+          _id: tempId,
           sender: currentUser,
           content: file.name,
           chat: { _id: chatId } as any,
@@ -178,6 +179,7 @@ export const messageApiSlice = apiSlice.injectEndpoints({
           updatedAt: new Date().toISOString(),
           sent: false,
           delivered: false,
+          isUploading: true, // Add uploading flag
         };
 
         // Optimistically add uploading message
@@ -194,21 +196,30 @@ export const messageApiSlice = apiSlice.injectEndpoints({
         try {
           const { data: responseData } = await queryFulfilled;
 
-          // Replace temp message with real one
+          // Replace temp message with real one (remove temp, add real)
           dispatch(
             messageApiSlice.util.updateQueryData(
               "getMessages",
               chatId,
               (draft) => {
-                const index = draft.data.findIndex(
-                  (msg) => msg._id === tempMessage._id
+                // Remove temp message
+                const tempIndex = draft.data.findIndex(
+                  (msg) => msg._id === tempId
                 );
-                if (index !== -1) {
-                  draft.data[index] = {
+                if (tempIndex !== -1) {
+                  draft.data.splice(tempIndex, 1);
+                }
+
+                // Add real message (avoid duplicates)
+                const realMessageExists = draft.data.some(
+                  (msg) => msg._id === responseData.data._id
+                );
+                if (!realMessageExists) {
+                  draft.data.push({
                     ...responseData.data,
                     sent: true,
                     delivered: false,
-                  };
+                  });
                 }
               }
             )

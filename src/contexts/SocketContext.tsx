@@ -129,11 +129,12 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
             // Check if message already exists (avoid duplicates)
             const exists = draft.data.some((msg) => msg._id === message._id);
             if (!exists) {
-              // Only add if it's not from current user OR if no existing message with same content/timestamp
+              // Additional check for file uploads - avoid duplicates based on content and type
               const isDuplicate = draft.data.some(
                 (msg) =>
                   msg.content === message.content &&
                   msg.sender._id === message.sender._id &&
+                  msg.type === message.type &&
                   Math.abs(
                     new Date(msg.createdAt).getTime() -
                       new Date(message.createdAt).getTime()
@@ -144,7 +145,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
                 draft.data.push(message);
               } else {
                 console.log(
-                  "Skipping duplicate message based on content/timestamp"
+                  "Skipping duplicate message based on content/timestamp/type"
                 );
               }
             }

@@ -113,16 +113,87 @@ export default function MessageInput({
   // Handle file selection
   const handleFileSelect = (type: string) => {
     setFileType(type);
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    // Small delay to ensure the key prop triggers re-render before opening
+    setTimeout(() => {
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+      }
+    }, 10);
     setShowAttachments(false);
   };
 
   // Handle file input change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+      const file = e.target.files[0];
+      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+
+      // Validate file size
+      if (file.size > maxSize) {
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description: `File size must be less than 10MB. Your file is ${(
+            file.size /
+            (1024 * 1024)
+          ).toFixed(2)}MB.`,
+        });
+        // Clear the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
+      // Validate file type matches selection
+      const isValidType = validateFileType(file, fileType);
+      if (!isValidType) {
+        toast({
+          variant: "destructive",
+          title: "Invalid file type",
+          description: `Please select a valid ${fileType} file.`,
+        });
+        // Clear the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+
+      setSelectedFile(file);
+    }
+  };
+
+  // Validate file type
+  const validateFileType = (file: File, expectedType: string): boolean => {
+    const mimeType = file.type.toLowerCase();
+
+    switch (expectedType) {
+      case "image":
+        return mimeType.startsWith("image/");
+      case "video":
+        return mimeType.startsWith("video/");
+      case "audio":
+        return mimeType.startsWith("audio/");
+      case "file":
+        // For documents, allow common document types
+        const documentTypes = [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "application/vnd.ms-powerpoint",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+          "text/plain",
+          "application/zip",
+          "application/x-rar-compressed",
+          "application/json",
+          "text/csv",
+        ];
+        return documentTypes.includes(mimeType) || mimeType.startsWith("text/");
+      default:
+        return true;
     }
   };
 
@@ -208,18 +279,19 @@ export default function MessageInput({
         </Popover>
 
         <input
+          key={fileType} // Force re-render when file type changes
           type="file"
           ref={fileInputRef}
           className="hidden"
           onChange={handleFileChange}
           accept={
             fileType === "image"
-              ? "image/*"
+              ? "image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml"
               : fileType === "video"
-              ? "video/*"
+              ? "video/mp4,video/webm,video/ogg,video/avi,video/mov,video/quicktime"
               : fileType === "audio"
-              ? "audio/*"
-              : "*"
+              ? "audio/mp3,audio/wav,audio/ogg,audio/mpeg,audio/m4a,audio/aac"
+              : "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,application/zip,application/x-rar-compressed"
           }
         />
 
