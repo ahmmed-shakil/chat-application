@@ -19,6 +19,7 @@ import {
   Video,
   X,
   Loader2,
+  Smile,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ export default function MessageInput({
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showAttachments, setShowAttachments] = useState(false);
+  const [showEmojis, setShowEmojis] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileType, setFileType] = useState<string>("");
@@ -48,6 +50,167 @@ export default function MessageInput({
   const { emitTyping, emitStopTyping, emitNewMessage } = useSocket();
   const { toast } = useToast();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Emoji categories with popular emojis
+  const emojiCategories = {
+    Smileys: [
+      "😀",
+      "😃",
+      "😄",
+      "😁",
+      "😆",
+      "😅",
+      "😂",
+      "🤣",
+      "😊",
+      "😇",
+      "🙂",
+      "🙃",
+      "😉",
+      "😌",
+      "😍",
+      "🥰",
+      "😘",
+      "😗",
+      "😙",
+      "😚",
+      "😋",
+      "😛",
+      "😝",
+      "😜",
+      "🤪",
+      "🤨",
+      "🧐",
+      "🤓",
+      "😎",
+      "🤩",
+      "🥳",
+    ],
+    Gestures: [
+      "👍",
+      "👎",
+      "👌",
+      "🤌",
+      "🤏",
+      "✌️",
+      "🤞",
+      "🤟",
+      "🤘",
+      "🤙",
+      "👈",
+      "👉",
+      "👆",
+      "🖕",
+      "👇",
+      "☝️",
+      "👋",
+      "🤚",
+      "🖐️",
+      "✋",
+      "🖖",
+      "👏",
+      "🙌",
+      "🤝",
+      "🙏",
+    ],
+    Hearts: [
+      "❤️",
+      "🧡",
+      "💛",
+      "💚",
+      "💙",
+      "💜",
+      "🖤",
+      "🤍",
+      "🤎",
+      "💔",
+      "❣️",
+      "💕",
+      "💞",
+      "💓",
+      "💗",
+      "💖",
+      "💘",
+      "💝",
+      "💟",
+    ],
+    Objects: [
+      "🎉",
+      "🎊",
+      "🎁",
+      "🎈",
+      "🌟",
+      "⭐",
+      "🔥",
+      "💯",
+      "✨",
+      "🎯",
+      "🏆",
+      "🥇",
+      "🎪",
+      "🎭",
+      "🎨",
+      "🎬",
+      "🎵",
+      "🎶",
+      "📱",
+      "💻",
+    ],
+    Nature: [
+      "🌹",
+      "🌸",
+      "🌺",
+      "🌻",
+      "🌷",
+      "🌱",
+      "🌿",
+      "🍀",
+      "🌳",
+      "🌲",
+      "🌴",
+      "🌵",
+      "🌾",
+      "🌊",
+      "⚡",
+      "🔥",
+      "❄️",
+      "☀️",
+      "🌙",
+      "⭐",
+    ],
+    Food: [
+      "🍎",
+      "🍊",
+      "🍋",
+      "🍌",
+      "🍉",
+      "🍇",
+      "🍓",
+      "🫐",
+      "🍈",
+      "🍒",
+      "🍑",
+      "🥭",
+      "🍍",
+      "🥥",
+      "🥝",
+      "🍅",
+      "🍆",
+      "🥑",
+      "🥦",
+      "🥒",
+      "🌶️",
+      "🌽",
+      "🥕",
+      "🫒",
+      "🧄",
+      "🧅",
+      "🥔",
+      "🍠",
+      "🥐",
+      "🍞",
+    ],
+  };
 
   useEffect(() => {
     if (message && !isTyping) {
@@ -120,6 +283,19 @@ export default function MessageInput({
       }
     }, 10);
     setShowAttachments(false);
+  };
+
+  // Handle emoji selection
+  const handleEmojiSelect = (emoji: string) => {
+    setMessage((prev) => prev + emoji);
+    setShowEmojis(false);
+    // Focus back to textarea after emoji selection
+    setTimeout(() => {
+      const textarea = document.querySelector("textarea");
+      if (textarea) {
+        textarea.focus();
+      }
+    }, 10);
   };
 
   // Handle file input change
@@ -234,6 +410,40 @@ export default function MessageInput({
       )}
 
       <div className="flex items-end gap-2">
+        <Popover open={showEmojis} onOpenChange={setShowEmojis}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+            >
+              <Smile className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 p-2" align="start" side="top">
+            <div className="max-h-60 overflow-y-auto">
+              {Object.entries(emojiCategories).map(([category, emojis]) => (
+                <div key={category} className="mb-3">
+                  <h4 className="text-xs font-medium text-gray-500 mb-1 px-1">
+                    {category}
+                  </h4>
+                  <div className="grid grid-cols-8 gap-1">
+                    {emojis.map((emoji, index) => (
+                      <button
+                        key={`${category}-${index}`}
+                        className="text-lg p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        onClick={() => handleEmojiSelect(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+
         <Popover open={showAttachments} onOpenChange={setShowAttachments}>
           <PopoverTrigger asChild>
             <Button
