@@ -152,6 +152,15 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         ) as unknown as AnyAction
       );
 
+      // Emit delivery acknowledgment ONCE if this message is not from current user
+      if (message.sender._id !== currentUser?._id && socket) {
+        socket.emit("message-delivered", {
+          messageId: message._id,
+          chatId: message.chat._id || message.chat,
+        });
+        console.log(`Sent delivery acknowledgment for message ${message._id}`);
+      }
+
       // Update chat list with last message
       dispatch(
         chatApiSlice.util.updateQueryData(
@@ -200,6 +209,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
             );
             if (message) {
               message.sent = true;
+              message.delivered = true;
             }
           }
         ) as unknown as AnyAction
@@ -338,7 +348,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       currentSocket.off("stop-typing", handleStopTyping);
       currentSocket.off("message-read-update", handleMessageReadUpdate);
     };
-  }, [token, dispatch, currentUser?._id]);
+  }, [token, dispatch, currentUser?._id, socket, currentUser]);
 
   const joinChat = (chatId: string) => {
     if (socketRef.current && online) {

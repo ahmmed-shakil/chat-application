@@ -48,6 +48,7 @@ export const messageApiSlice = apiSlice.injectEndpoints({
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           sent: false,
+          delivered: false,
         };
 
         // Optimistically add message to the list
@@ -93,7 +94,11 @@ export const messageApiSlice = apiSlice.injectEndpoints({
                   (msg) => msg._id === tempMessage._id
                 );
                 if (index !== -1) {
-                  draft.data[index] = { ...responseData.data, sent: true };
+                  draft.data[index] = {
+                    ...responseData.data,
+                    sent: true,
+                    delivered: false,
+                  };
                 }
               }
             )
@@ -172,6 +177,7 @@ export const messageApiSlice = apiSlice.injectEndpoints({
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           sent: false,
+          delivered: false,
         };
 
         // Optimistically add uploading message
@@ -198,7 +204,11 @@ export const messageApiSlice = apiSlice.injectEndpoints({
                   (msg) => msg._id === tempMessage._id
                 );
                 if (index !== -1) {
-                  draft.data[index] = { ...responseData.data, sent: true };
+                  draft.data[index] = {
+                    ...responseData.data,
+                    sent: true,
+                    delivered: false,
+                  };
                 }
               }
             )

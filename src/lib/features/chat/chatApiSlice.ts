@@ -25,6 +25,7 @@ export interface Message {
   createdAt: string;
   updatedAt: string;
   sent: boolean;
+  delivered?: boolean;
 }
 
 export interface ChatsResponse {

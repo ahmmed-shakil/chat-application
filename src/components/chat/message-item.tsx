@@ -114,13 +114,33 @@ export default function MessageItem({
             <p className="break-words">{message.content}</p>
             <div className="text-xs text-gray-500 mt-1 flex items-center justify-end gap-1">
               {getFormattedTime(message.createdAt)}
-              {isOwnMessage &&
-                message.readBy.length !== chat?.users?.length &&
-                message?.sent && <Check className="h-3 w-3 text-gray-500" />}
-              {isOwnMessage &&
-                message.readBy.length === chat?.users?.length && (
-                  <CheckCheck className="h-3 w-3 text-blue-500" />
-                )}
+              {isOwnMessage && (
+                <>
+                  {(() => {
+                    // Determine the message status
+                    const allUsersCount = chat?.users?.length || 0;
+                    const readByCount = message.readBy.length;
+
+                    // If read by all users, show blue double tick
+                    if (readByCount === allUsersCount) {
+                      return <CheckCheck className="h-3 w-3 text-blue-500" />;
+                    }
+
+                    // If delivered but not read by all, show gray double tick
+                    if (message?.delivered) {
+                      return <CheckCheck className="h-3 w-3 text-gray-500" />;
+                    }
+
+                    // If only sent but not delivered, show single tick
+                    if (message?.sent) {
+                      return <Check className="h-3 w-3 text-gray-500" />;
+                    }
+
+                    // If not sent yet, show nothing
+                    return null;
+                  })()}
+                </>
+              )}
             </div>
           </div>
         );
